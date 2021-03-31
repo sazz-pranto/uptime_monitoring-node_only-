@@ -1,6 +1,8 @@
 // Dependencies
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
+const { routes } = require('../routes');
+const { notFound } = require('../handlers/routeHandlers/notFoundHandler');
 
 // model scaffolding
 const handler = {};
@@ -14,7 +16,18 @@ handler.reqResHandler = (req, res) => {
     const method = req.method.toLowerCase();  // lowercased request method
     const queryStrings = parsedUrl.query;  // an object containing all the query strings
     const headers = req.headers; // an object containing all the headers
+
+    const requestProperties = {
+        parsedUrl,
+        path,
+        trimmedPath,
+        method,
+        queryStrings,
+        headers,
+    };
+
     const decoder = new StringDecoder('utf-8');
+
     let data = '';
     req.on('data', (buffer) => {
         data += decoder.write(buffer); // decodes the buffer and converts it into readable data

@@ -1,6 +1,6 @@
 // Dependencies
 const http = require('http');
-const { reqResHandler } = require('./helpers/req_res'); // request & response handler from req_res
+const { reqResHandler } = require('./helpers/req_res_Handler'); // request & response handler from req_res
 
 // app object - model scaffolding
 const app = {};
