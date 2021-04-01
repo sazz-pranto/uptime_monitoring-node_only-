@@ -1,8 +1,11 @@
 // model scaffolding
 const handler = {};
 
-handler.notFound = () => {
-    console.log('not found!');
+handler.notFoundHandler = (requestProperties, callback) => {
+    // status code and message (payload)
+    callback(404, {
+        message: "Your requested url was not found!"
+    })
 };
 
 module.exports = handler;

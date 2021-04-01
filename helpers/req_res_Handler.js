@@ -1,8 +1,8 @@
 // Dependencies
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
-const { routes } = require('../routes');
-const { notFound } = require('../handlers/routeHandlers/notFoundHandler');
+const routes = require('../routes');
+const { notFoundHandler } = require('../handlers/routeHandlers/notFoundHandler');
 
 // model scaffolding
 const handler = {};
@@ -16,7 +16,6 @@ handler.reqResHandler = (req, res) => {
     const method = req.method.toLowerCase();  // lowercased request method
     const queryStrings = parsedUrl.query;  // an object containing all the query strings
     const headers = req.headers; // an object containing all the headers
-
     const requestProperties = {
         parsedUrl,
         path,
@@ -25,9 +24,25 @@ handler.reqResHandler = (req, res) => {
         queryStrings,
         headers,
     };
+    const decoder = new StringDecoder('utf-8'); // decoder object helps decoding the buffer data
+    let chosenHandler;  // user's chosen path
+    // check if chosen path exists in routes
+    if(routes[trimmedPath]) {
+        chosenHandler = routes[trimmedPath];
+    } else {
+        chosenHandler = notFoundHandler;
+    }
+    // show response according to user's chosen url if it exists in routes
+    chosenHandler(requestProperties, (statusCode, payload) => {
+        statusCode = typeof statusCode === 'number' ? statusCode : 500;
+        payload = typeof payload === 'object' ? payload : {};
 
-    const decoder = new StringDecoder('utf-8');
+        const payloadString = JSON.stringify(payload);
 
+        // return the final response
+        res.writeHead(statusCode);
+        res.end(payloadString);
+    });
     let data = '';
     req.on('data', (buffer) => {
         data += decoder.write(buffer); // decodes the buffer and converts it into readable data
